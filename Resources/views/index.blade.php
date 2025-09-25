@@ -57,8 +57,8 @@
                             <label for="flight_number" class="mb-1">Flight Number</label>
                             <div class="input-group input-group-append">
                                 <input type="text" name="flight_number" id="flight_number" class="form-control" required>
-                                    <button type="button" name="generate_flight_number" id="generate_flight_number"
-                                        class="btn btn-secondary border-left-0">Generate</button>
+                                <button type="button" name="generate_flight_number" id="generate_flight_number"
+                                    class="btn btn-secondary border-left-0">Generate</button>
 
                             </div>
                         </div>
@@ -113,6 +113,18 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            function generateFlightNumber() {
+                const x = document.getElementById('flight_number');
+
+                x.setAttribute('value', Math.floor(Math.random() * 5000) + 1);
+            }
+            
+            generateFlightNumber();
+
+            document.getElementById('generate_flight_number').addEventListener('click', () => {
+                generateFlightNumber();
+            });
+
 
             /*             const removeBtn = document.getElementById('removeBtn');
                         const cancelBtn = document.getElementById('cancelBtn');
