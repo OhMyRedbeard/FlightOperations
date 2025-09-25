@@ -104,7 +104,50 @@
         </div>
         <div class="col-lg-9">
             <div class="card">
-
+                <div class="card-body">
+                    <h5>View your bids</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Flight Number</th>
+                                <th scope="col">Departure</th>
+                                <th scope="col">Arrival</th>
+                                <th scope="col">Distance</th>
+                                <th scope="col">Created</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($bids as $bid)
+                                <tr>
+                                    <td><a href="#">{{ $bid->flight->airline->icao }}{{ $bid->flight->flight_number }}</a></td>
+                                    <td>{{ $bid->flight->dpt_airport->icao }}</td>
+                                    <td>{{ $bid->flight->arr_airport->icao }}</td>
+                                    <td>{{ $bid->flight->distance }}nm</td>
+                                    <td>{{ Carbon::parse($bid->created_at)->diffForHumans() }}</td>
+                                    <td><button class="btn btn-sm btn-danger remove-bid" data-id="{{ $bid->id }}"
+                                            data-url="{{ route('flightoperations.delete-bid', ['bidId' => $bid->id]) }}"
+                                            data-flight-number="{{ $bid->flight->airline->icao}}{{ $bid->flight->flight_number }}"
+                                            data-bs-target="#remove_bid_modal" data-bs-toggle="modal">Remove
+                                            Bid</button></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="remove_bid_modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <span class="mdi mdi-close-circle-outline display-1 text-danger"></span>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button id="remove_confirm" class="btn btn-success" data-bs-dismist="modal">Yes, delete.</button>
+                    <button id="remove_cancel" class="btn btn-danger" data-bs-dismiss="modal">No, don't delete.</button>
+                </div>
             </div>
         </div>
     </div>
@@ -118,57 +161,53 @@
 
                 x.setAttribute('value', Math.floor(Math.random() * 5000) + 1);
             }
-            
+
             generateFlightNumber();
 
             document.getElementById('generate_flight_number').addEventListener('click', () => {
                 generateFlightNumber();
             });
 
+            const removeBid = document.querySelectorAll('.remove-bid');
+            const removeBidModal = document.querySelector('#remove_bid_modal .modal-body');
+            const removeConfirm = document.getElementById('remove_confirm');
+            const removeCancel = document.getElementById('remove_cancel');
 
-            /*             const removeBtn = document.getElementById('removeBtn');
-                        const cancelBtn = document.getElementById('cancelBtn');
-                        const removeBids = document.querySelectorAll('.remove-bid');
+            removeBid.forEach(btn => {
+                const id = btn.getAttribute('data-id');
+                const url = btn.getAttribute('data-url');
+                const flightNumber = btn.getAttribute('data-flight-number');
 
-                        removeBids.forEach(btn => {
-                            const id = btn.getAttribute('data-id');
-                            const url = btn.getAttribute('data-url');
-                            const flightNumber = btn.getAttribute('data-flight-number');
-                            btn.addEventListener('click', () => {
-                                const target = document.querySelector("#removeConfirm .modal-dialog .modal-body");
-                                removeBtn.setAttribute('data-id', id);
-                                removeBtn.setAttribute('data-url', url);
+                btn.addEventListener('click', () => {
+                    removeConfirm.setAttribute('data-id', id);
+                    removeConfirm.setAttribute('data-url', url);
 
-                                target.innerHTML = "Are you sure you want to delete " + flightNumber + "? Once confirmed, this cannot be undone.";
-                            });
-                        });
+                    removeBidModal.innerHTML = "Are you sure you want to delete " + flightNumber + "? Once confirmed, this cannot be undone.";
+                });
+            });
 
-                        cancelBtn.addEventListener('click', () => {
-                            removeBtn.removeAttribute('data-id');
-                            removeBtn.removeAttribute('data-url');
-                        });
+            removeConfirm.addEventListener('click', () => {
+                const bidId = removeConfirm.getAttribute('data-id');
+                const url = removeConfirm.getAttribute('data-url');
+                const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const apiKey = document.querySelector('meta[name="api-key"]').getAttribute('content');
 
-                        removeBtn.addEventListener('click', () => {
-                            const id = removeBtn.getAttribute('data-id');
-                            const url = removeBtn.getAttribute('data-url');
-                            const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                            const api = document.querySelector('meta[name="api-key"]').getAttribute('content');
+                const xhr = new XMLHttpRequest();
 
-                            const xhr = new XMLHttpRequest();
-                            xhr.onload = function () {
-                                console.log("Response:", xhr.status, xhr.responseText);
-                                if (xhr.status === 200) {
-                                    window.location.reload();
-                                }
-                            };
+                xhr.onload = function() {
+                    console.log("Response: ", xhr.status, xhr.responseText);
+                    if(xhr.status === 200){
+                        window.location.reload();
+                    }
+                }
 
-                            xhr.open("POST", url, true);
-                            xhr.setRequestHeader('X-CSRF-TOKEN', csrf);
-                            xhr.setRequestHeader("X-API-KEY", api);
-                            xhr.send(id);
-                        }); */
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader('X-CSRF-TOKEN', csrf);
+                xhr.setRequestHeader('X-API-KEY', apiKey);
+                xhr.send(bidId);
+            });
 
-            document.getElementById('airline_id').addEventListener('change', function () {
+            document.getElementById('airline_id').addEventListener('change', () => {
                 const airlineId = this.value;
                 if (!airlineId || this.value === '') {
                     document.getElementById('aircraft_id').innerHTML = '<option value="" selected>Please Select An Airline First</option>';
