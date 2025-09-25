@@ -92,12 +92,6 @@ class FlightOperationsController extends Controller
         return view('flightoperations::aircraft_table', compact('aircraft'))->render();
         }
 
-    public function generateFlightNumber()
-        {
-        $num = rand(1, 5000);
-        return response()->json(['flight_number' => $num]);
-        }
-
     public function deleteBid(Request $request, $bidId)
         {
         $bid = Bid::where('id', $bidId);
