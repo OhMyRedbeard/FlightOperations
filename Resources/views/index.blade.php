@@ -60,6 +60,8 @@
 
                             </div>
                         </div>
+
+                        {{-- Departure Airport Selection --}}
                         <div class="form-group mb-3">
                             <label for="dpt_airport_id" class="mb-1">Departure Airport</label>
                             <select name="dpt_airport_id" id="dpt_airport_id" class="form-control">
