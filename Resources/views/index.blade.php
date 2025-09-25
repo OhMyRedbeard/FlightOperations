@@ -71,6 +71,8 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        {{-- Arrival Airport Selection --}}
                         <div class="form-group mb-3">
                             <label for="arr_airport_id" class="mb-1">Arrival Airport</label>
                             <select name="arr_airport_id" id="arr_airport_id" class="form-control">
@@ -80,6 +82,8 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        {{-- Flight Type Selection --}}
                         <div class="form-group mb-3">
                             <label for="flight_type">Flight Type</label>
                             <select name="flight_type" id="flight_type" class="form-control" required>
