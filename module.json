@@ -1,0 +1,9 @@
+{
+  "name": "FlightOperations",
+  "alias": "flightoperations",
+  "description": "Flight Operations Module for PHPVMS7 - Create flights and manage bids",
+  "keywords": [],
+  "priority": 0,
+  "providers": ["Modules\\FlightOperations\\Providers\\FlightOperationsServiceProvider"],
+  "files": []
+}

@@ -1,0 +1,20 @@
+{
+  "name": "modules/flight-operations",
+  "description": "Flight Operations Module for PHPVMS7",
+  "type": "laravel-module",
+  "license": "MIT",
+  "require": {
+    "php": "^8.0",
+    "joshbrw/laravel-module-installer": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Modules\\FlightOperations\\": ""
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": ["Modules\\FlightOperations\\Providers\\FlightOperationsServiceProvider"]
+    }
+  }
+}
