@@ -55,10 +55,10 @@
                         {{-- Flight Number with Auto-Generate --}}
                         <div class="form-group mb-3">
                             <label for="flight_number" class="mb-1">Flight Number</label>
-                            <div class="input-group input-group-append">
+                            <div class="input-group">
                                 <input type="text" name="flight_number" id="flight_number" class="form-control" required>
                                 <button type="button" name="generate_flight_number" id="generate_flight_number"
-                                    class="btn btn-secondary border-left-0">Generate</button>
+                                    class="btn btn-secondary">Generate</button>
 
                             </div>
                         </div>
@@ -120,16 +120,43 @@
                         <tbody>
                             @foreach($bids as $bid)
                                 <tr>
-                                    <td><a href="#">{{ $bid->flight->airline->icao }}{{ $bid->flight->flight_number }}</a></td>
+                                    <td><a href="#">{{ $bid->flight->airline->icao }}{{ $bid->flight->flight_number }}</a>
+                                    </td>
                                     <td>{{ $bid->flight->dpt_airport->icao }}</td>
                                     <td>{{ $bid->flight->arr_airport->icao }}</td>
                                     <td>{{ $bid->flight->distance }}nm</td>
                                     <td>{{ Carbon::parse($bid->created_at)->diffForHumans() }}</td>
-                                    <td><button class="btn btn-sm btn-danger remove-bid" data-id="{{ $bid->id }}"
-                                            data-url="{{ route('flightoperations.delete-bid', ['bidId' => $bid->id]) }}"
-                                            data-flight-number="{{ $bid->flight->airline->icao}}{{ $bid->flight->flight_number }}"
-                                            data-bs-target="#remove_bid_modal" data-bs-toggle="modal">Remove
-                                            Bid</button></td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                                class="dropdown-toggle">Actions</a>
+                                            <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                                                <div class="dropdown-item">
+                                                    <div class="mb-1">
+                                                        <button class="btn btn-sm btn-danger remove-bid w-100"
+                                                            data-id="{{ $bid->id }}"
+                                                            data-url="{{ route('flightoperations.delete-bid', ['bidId' => $bid->id]) }}"
+                                                            data-flight-number="{{ $bid->flight->airline->icao}}{{ $bid->flight->flight_number }}"
+                                                            data-bs-target="#remove_bid_modal" data-bs-toggle="modal">Remove
+                                                            Bid</button>
+                                                    </div>
+                                                    <div class="mb-1">
+                                                        <a
+                                                            href="{{ route('frontend.simbrief.generate') }}?flight_id={{ $bid->flight->id }}&aircraft_id={{ $bid->aircraft_id }}">
+                                                            <button class="btn btn-sm btn-secondary w-100">Plan with
+                                                                SimBrief</button>
+                                                        </a>
+                                                    </div>
+                                                    <div class="mb-1">
+                                                        <a href="#">
+                                                            <button class="btn btn-sm btn-primary w-100">Send to
+                                                                VMSACARS</button>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -138,8 +165,8 @@
             </div>
         </div>
     </div>
-    <div class="modal" id="remove_bid_modal">
-        <div class="modal-dialog">
+    <div class="modal fade" id="remove_bid_modal">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <span class="mdi mdi-close-circle-outline display-1 text-danger"></span>
@@ -195,9 +222,9 @@
 
                 const xhr = new XMLHttpRequest();
 
-                xhr.onload = function() {
+                xhr.onload = function () {
                     console.log("Response: ", xhr.status, xhr.responseText);
-                    if(xhr.status === 200){
+                    if (xhr.status === 200) {
                         window.location.reload();
                     }
                 }
@@ -222,6 +249,21 @@
                     })
                     .catch(err => console.error(err));
             });
+            /*             const actionsBtns = document.querySelectorAll('.accordian-button')
+                        const actions = document.querySelectorAll('.actions');
+                        actionsBtns.forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                const target = btn.getAttribute('data-bs-target');
+                                actions.forEach(action => {
+                                    const id = action.getAttribute('id');
+                                    action.classList.remove('show');
+                                    action.classList.add('collapse');
+                                    if(target === id){
+                                        action.classList.add('show');
+                                    }
+                                });
+                            });
+                        }); */
         });
     </script>
 @endsection
