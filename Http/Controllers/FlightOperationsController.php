@@ -26,7 +26,6 @@ class FlightOperationsController extends Controller
             'F' => 'Cargo',
         ];
         $bids = Bid::orderBy('id')->where('user_id', Auth::id())->get();
-
         return view('flightoperations::index', compact('airlines', 'aircraft', 'subfleets', 'airports', 'flightTypes', 'bids'));
 
         }

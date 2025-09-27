@@ -106,60 +106,65 @@
             <div class="card">
                 <div class="card-body">
                     <h5>View your bids</h5>
-                        <table class="table table-striped">
-                            <thead>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Flight Number</th>
+                                <th scope="col">Departure</th>
+                                <th scope="col">Arrival</th>
+                                <th scope="col">Distance</th>
+                                <th scope="col">Created</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($bids as $bid)
                                 <tr>
-                                    <th scope="col">Flight Number</th>
-                                    <th scope="col">Departure</th>
-                                    <th scope="col">Arrival</th>
-                                    <th scope="col">Distance</th>
-                                    <th scope="col">Created</th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($bids as $bid)
-                                    <tr>
-                                        <td><a href="#">{{ $bid->flight->airline->icao }}{{ $bid->flight->flight_number }}</a>
-                                        </td>
-                                        <td>{{ $bid->flight->dpt_airport->icao }}</td>
-                                        <td>{{ $bid->flight->arr_airport->icao }}</td>
-                                        <td>{{ $bid->flight->distance }}nm</td>
-                                        <td>{{ Carbon::parse($bid->created_at)->diffForHumans() }}</td>
-                                        <td>
-                                            <div class="dropdown">
-                                            <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" class="dropdown-toggle">Actions</a>
+                                    <td>{{ $bid->flight->airline->icao }}{{ $bid->flight->flight_number }}
+                                    </td>
+                                    <td>{{ $bid->flight->dpt_airport->icao }}</td>
+                                    <td>{{ $bid->flight->arr_airport->icao }}</td>
+                                    <td>{{ $bid->flight->distance }}nm</td>
+                                    <td>{{ Carbon::parse($bid->created_at)->diffForHumans() }}</td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                                class="dropdown-toggle">Actions</a>
                                             <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
                                                 <div class="dropdown-item">
-                                                        <div class="mb-1">
-                                                            <button class="btn btn-sm btn-danger remove-bid w-100"
-                                                                data-id="{{ $bid->id }}"
-                                                                data-url="{{ route('flightoperations.delete-bid', ['bidId' => $bid->id]) }}"
-                                                                data-flight-number="{{ $bid->flight->airline->icao}}{{ $bid->flight->flight_number }}"
-                                                                data-bs-target="#remove_bid_modal" data-bs-toggle="modal">Remove
-                                                                Bid</button>
-                                                        </div>
-                                                        <div class="mb-1">
-                                                            <a
-                                                                href="{{ route('frontend.simbrief.generate') }}?flight_id={{ $bid->flight->id }}&aircraft_id={{ $bid->aircraft_id }}">
-                                                                <button class="btn btn-sm btn-secondary w-100">Plan with
-                                                                    SimBrief</button>
-                                                            </a>
-                                                        </div>
-                                                        <div class="mb-1">
-                                                            <a href="#">
-                                                                <button class="btn btn-sm btn-primary w-100">Send to
-                                                                    VMSACARS</button>
-                                                            </a>
-                                                        </div>
+                                                    <div class="mb-1">
+                                                        <button class="btn btn-sm btn-danger remove-bid w-100"
+                                                            data-id="{{ $bid->id }}"
+                                                            data-url="{{ route('flightoperations.delete-bid', ['bidId' => $bid->id]) }}"
+                                                            data-flight-number="{{ $bid->flight->airline->icao}}{{ $bid->flight->flight_number }}"
+                                                            data-bs-target="#remove_bid_modal" data-bs-toggle="modal">Remove
+                                                            Bid</button>
+                                                    </div>
+                                                    <div class="mb-1">
+                                                        @if(!empty(setting('simbrief.api_key')))
+                                                            @if($bid->flight->simbrief && $bid->flight->simbrief->user_id === Auth::id())
+                                                                <a href="{{ route('frontend.simbrief.briefing', $bid->flight->simbrief->id) }}"
+                                                                    class="btn btn-sm btn-secondary w-100">View SimBrief Flight Plan</a>
+                                                            @else
+                                                                <a href="{{ route('frontend.simbrief.generate') }}?flight_id={{ $bid->flight->id }}&aircraft_id={{ $bid->aircraft_id }}"
+                                                                    class="btn btn-sm btn-secondary w-100">Plan with SimBrief</a>
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                    <div class="mb-1">
+                                                        <a href="#">
+                                                            <button class="btn btn-sm btn-primary w-100">Send to
+                                                                VMSACARS</button>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -172,7 +177,7 @@
                 </div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
-                    <button id="remove_confirm" class="btn btn-success" data-bs-dismist="modal">Yes, delete.</button>
+                    <button id="remove_confirm" class="btn btn-success" data-bs-dismiss="modal">Yes, delete.</button>
                     <button id="remove_cancel" class="btn btn-danger" data-bs-dismiss="modal">No, don't delete.</button>
                 </div>
             </div>
@@ -234,7 +239,7 @@
                 xhr.send(bidId);
             });
 
-            document.getElementById('airline_id').addEventListener('change', function() {
+            document.getElementById('airline_id').addEventListener('change', function () {
                 const airlineId = this.value;
                 if (!airlineId || this.value === '') {
                     document.getElementById('aircraft_id').innerHTML = '<option value="" selected>Please Select An Airline First</option>';
