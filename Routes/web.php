@@ -8,5 +8,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/get-fleet/{airlineId}', 'FlightOperationsController@getFleet')->name('flightoperations.get-fleet');
         Route::post('/create-flight', 'FlightOperationsController@createFlight')->name('flightoperations.create-flight');
         Route::post('/delete-bid/{bidId}', 'FlightOperationsController@deleteBid')->name('flightoperations.delete-bid');
+        Route::get('/delete-simbrief/{id}', 'FlightOperationsController@deleteSimbrief')->name('flightoperations.delete-simbrief');
         });
     });

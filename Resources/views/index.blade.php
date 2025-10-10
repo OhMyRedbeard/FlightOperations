@@ -1,12 +1,17 @@
 @extends('app')
 
+@if(Auth::user()->email_verified_at === NULL)
+    {!! redirect()->to('/dashboard')->send() !!}
+@endif
+
 @section('title', 'Flight Operations')
 
 @section('content')
     <div class="card mb-3">
         <div class="card-body">
-            <h4>Flight Operations</h4>
-            <div>Book your next passenger or charter flight, or view your current bids here!</div>
+            {{-- <h4>Flight Operations</h4>
+            <div>Book your next passenger or charter flight, or view your current bids here!</div>--}}
+            <span class="fw-bold">@lang('vingar.flightoperations')</span> - @lang('vingar.booknext')
         </div>
     </div>
     @if(session('success'))
@@ -30,15 +35,15 @@
         <div class="col-lg-3">
             <div class="card">
                 <div class="card-body">
-                    <h5>Create new flight</h5>
+                    <h5>@lang('vingar.createnew')</h5>
                     <form method="POST" action="{{ route('flightoperations.create-flight') }}">
                         @csrf
 
                         {{-- Airline Selection --}}
                         <div class="form-group mb-3">
-                            <label for="airline_id" class="mb-1">Airline</label>
-                            <select name="airline_id" id="airline_id" class="form-control" required>
-                                <option value="">Select Airline</option>
+                            <label for="airline_id" class="mb-1">@lang('vingar.airline')</label>
+                            <select name="airline_id" id="airline_id" class="form-select" required>
+                                <option value="">@lang('vingar.selectairline')</option>
                                 @foreach($airlines as $airline)
                                     <option value="{{ $airline->id }}">{{ $airline->code }} - {{ $airline->name }}</option>
                                 @endforeach
@@ -46,28 +51,28 @@
                         </div>
                         {{-- Aircraft Selection --}}
                         <div class="form-group mb-3">
-                            <label for="aircraft_id" class="mb-1">Aircraft</label>
-                            <select name="aircraft_id" id="aircraft_id" class="form-control" required>
-                                <option value="" selected>Please Select An Airline First</option>
+                            <label for="aircraft_id" class="mb-1">@lang('vingar.aircraft')</label>
+                            <select name="aircraft_id" id="aircraft_id" class="form-select" required>
+                                <option value="" selected>@lang('vingar.pleaseselectairline')</option>
                             </select>
                         </div>
 
                         {{-- Flight Number with Auto-Generate --}}
                         <div class="form-group mb-3">
-                            <label for="flight_number" class="mb-1">Flight Number</label>
+                            <label for="flight_number" class="mb-1">@lang('vingar.flightnumber')</label>
                             <div class="input-group">
                                 <input type="text" name="flight_number" id="flight_number" class="form-control" required>
                                 <button type="button" name="generate_flight_number" id="generate_flight_number"
-                                    class="btn btn-secondary">Generate</button>
+                                    class="btn btn-secondary">@lang('vingar.generate')</button>
 
                             </div>
                         </div>
 
                         {{-- Departure Airport Selection --}}
                         <div class="form-group mb-3">
-                            <label for="dpt_airport_id" class="mb-1">Departure Airport</label>
-                            <select name="dpt_airport_id" id="dpt_airport_id" class="form-control">
-                                <option value="">Select Departure Airport</option>
+                            <label for="dpt_airport_id" class="mb-1">@lang('vingar.origin')</label>
+                            <select name="dpt_airport_id" id="dpt_airport_id" class="form-select">
+                                <option value="">@lang('vingar.selectorigin')</option>
                                 @foreach($airports as $airport)
                                     <option value="{{ $airport->id }}" {{ old('dpt_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->icao }} - {{ $airport->name }}</option>
                                 @endforeach
@@ -76,9 +81,9 @@
 
                         {{-- Arrival Airport Selection --}}
                         <div class="form-group mb-3">
-                            <label for="arr_airport_id" class="mb-1">Arrival Airport</label>
-                            <select name="arr_airport_id" id="arr_airport_id" class="form-control">
-                                <option value="" selected>Select Arrival Airport</option>
+                            <label for="arr_airport_id" class="mb-1">@lang('vingar.destination')</label>
+                            <select name="arr_airport_id" id="arr_airport_id" class="form-select">
+                                <option value="" selected>@lang('vingar.selectdestination')</option>
                                 @foreach($airports as $airport)
                                     <option value="{{ $airport->id }}" {{ old('arr_airport_id') == $airport->id ? 'selected' : '' }}>{{ $airport->icao }} - {{ $airport->name }}</option>
                                 @endforeach
@@ -87,17 +92,17 @@
 
                         {{-- Flight Type Selection --}}
                         <div class="form-group mb-3">
-                            <label for="flight_type">Flight Type</label>
-                            <select name="flight_type" id="flight_type" class="form-control" required>
-                                <option value="" selected>Select Flight Type</option>
+                            <label for="flight_type">@lang('vingar.flightype')</label>
+                            <select name="flight_type" id="flight_type" class="form-select" required>
+                                <option value="" selected>@lang('vingar.selecttype')</option>
                                 @foreach($flightTypes as $key => $name)
                                     <option value="{{ $key }}" {{ old('flight_type') == $key ? 'selected' : '' }}>{{ $name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-                        <button type="submit" name="action" value="create_flight" class="btn btn-secondary">Create Flight
-                            &amp; Add to Bids</button>
+                        <button type="submit" name="action" value="create_flight"
+                            class="btn btn-secondary">@lang('vingar.createflight')</button>
                     </form>
                 </div>
             </div>
@@ -105,7 +110,7 @@
         <div class="col-lg-9">
             <div class="card">
                 <div class="card-body">
-                    <h5>View your bids</h5>
+                    <h5>@lang('vingar.viewbids')</h5>
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -152,7 +157,7 @@
                                                         @endif
                                                     </div>
                                                     <div class="mb-1">
-                                                        <a href="#">
+                                                        <a href="vmsacars:bid/{{$bid->id}}">
                                                             <button class="btn btn-sm btn-primary w-100">Send to
                                                                 VMSACARS</button>
                                                         </a>
