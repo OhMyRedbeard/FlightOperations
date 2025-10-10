@@ -40,7 +40,7 @@ A comprehensive flight operations module that allows users to create flights and
 
 ## Usage
 
-Navigate to `/flight-operations` to access the module interface.
+Navigate to `/flightoperations` to access the module interface.
 
 ### Creating a Flight
 1. Select an airline from the dropdown
