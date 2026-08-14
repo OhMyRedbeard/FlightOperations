@@ -19,25 +19,19 @@ class FlightOperationsController extends Controller
 {
     public function index()
     {
-        $airlines = Airline::orderBy('id')->where('active', true)->get();
         $aircraft = Aircraft::orderBy('name')->get();
         $subfleets = Subfleet::orderBy('id')->get();
         $airports = Airport::orderBy('icao')->get();
-        $flightTypes = [
-            'J' => 'Passenger',
-            'F' => 'Cargo',
-        ];
         $bids = Bid::orderBy('id')->where('user_id', Auth::id())->get();
-        return view('flightoperations::index', compact('airlines', 'aircraft', 'subfleets', 'airports', 'flightTypes', 'bids'));
+        return view('flightoperations::index', compact('aircraft', 'subfleets', 'airports', 'bids'));
 
     }
     public function createFlight(Request $request)
     {
         $request->validate([
-            'airline_id' => 'required|exists:airlines,id',
             'aircraft_id' => 'required|exists:aircraft,id',
+            'airline_id' => 'string|1',
             'flight_number' => 'required|string|max:6',
-            'flight_type' => 'required|string|in:J,F',
             'dpt_airport_id' => 'required|exists:airports,id',
             'arr_airport_id' => 'required|exists:airports,id',
         ]);
@@ -54,9 +48,8 @@ class FlightOperationsController extends Controller
             );
 
             $flight = Flight::create([
-                'airline_id' => $request->airline_id,
                 'aircraft_id' => $request->aircraft_id,
-                'flight_type' => $request->flight_type,
+                'airline_id' => 1,
                 'flight_number' => $request->flight_number,
                 'route_code' => 'FFM',
                 'dpt_airport_id' => $request->dpt_airport_id,
@@ -70,7 +63,7 @@ class FlightOperationsController extends Controller
                 'aircraft_id' => $request->aircraft_id,
             ]);
 
-            $airlineCode = Airline::find($request->airline_id);
+            $airlineCode = "DWA";
             $flightNumber = $airlineCode->icao . $flight->flight_number;
 
             return redirect()->route('flightoperations.index')
@@ -85,10 +78,9 @@ class FlightOperationsController extends Controller
         }
     }
 
-    public function getFleet($airlineId)
+    public function getFleet()
     {
-        $subfleet = Subfleet::where('airline_id', $airlineId)->pluck('id');
-        $aircraft = Aircraft::whereIn('subfleet_id', $subfleet)->get();
+        $aircraft = Aircraft::orderBy('name')->get();
 
         return view('flightoperations::aircraft_table', compact('aircraft'))->render();
     }
